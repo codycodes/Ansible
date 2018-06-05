@@ -1,0 +1,21 @@
+---
+ - name: Create instance(s)
+   hosts: localhost
+   connection: local
+   gather_facts: no
+
+   tasks:
+     - name: adding group
+       lineinfile:
+         dest: /etc/ansible/hosts
+         line: '[ldap-server]'
+
+     - name: adding group
+       lineinfile:
+         dest: /etc/ansible/hosts
+         line: '[nfs-server]'
+
+     - name: adding group
+       lineinfile:
+         dest: /etc/ansible/hosts
+         line: '[clients]'
