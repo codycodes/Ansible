@@ -5,8 +5,8 @@
    gather_facts: no
 
    vars:
-     service_account_email: 325753355097-compute@developer.gserviceaccount.com
-     credentials_file: /ansible/.key.json
+     service_account_email: account@developer.gserviceaccount.com
+     credentials_file: /path/certification.json
      project_id: project-x-154804
      zone: us-west1-a
      machine_type: n1-standard-1
