@@ -1,0 +1,108 @@
+---
+ - name: Create instance(s)
+   hosts: localhost
+   connection: local
+   gather_facts: no
+
+   vars:
+     service_account_email: 325753355097-compute@developer.gserviceaccount.com
+     credentials_file: /ansible/.key.json
+     project_id: project-x-154804
+     zone: us-west1-a
+     machine_type: n1-standard-1
+     image1: centos-7
+     image2: ubuntu-1604-lts
+
+   tasks:
+   - name: Launch instance server
+     gce:
+         instance_names: ldap
+         zone: "{{ zone }}"
+         machine_type: "{{ machine_type }}"
+         image: "{{ image1 }}"
+         image_family: "{{ image1 }}"
+         service_account_email: "{{ service_account_email }}"
+         credentials_file: "{{ credentials_file }}"
+         project_id: "{{ project_id }}"
+         tags: ldap-server
+         metadata: '{"startup-script" : "curl https://raw.githubusercontent.com/yolmant/Servers/master/Gcloud/ldap-s.bash > ldap.sh; chmod +x ./ldap.sh; ./ldap.sh"}'
+     register: gce
+
+   - debug: msg=" Ldap server IP = {{ gce.instance_data[0].private_ip }}"
+  
+   - name: adding instances to the groups
+     lineinfile:
+       dest: /etc/ansible/hosts
+       insertafter: '^\[ldap-server\]'
+       line: "{{ gce.instance_data[0].private_ip }}"
+       state: present
+
+   - name: Launch NFS server
+     gce:
+        instance_names: nfs
+        zone: "{{ zone }}"
+        machine_type: "{{ machine_type }}"
+        image: "{{ image1 }}"
+        image_family: "{{ image1 }}"
+        service_account_email: "{{ service_account_email }}"
+        credentials_file: "{{ credentials_file }}"
+        project_id: "{{ project_id }}"
+        tags: nfs-server
+        metadata: '{"startup-script" : "curl https://raw.githubusercontent.com/yolmant/Ansible/master/Servers_config/NFS.bash > nfs.sh; chmod +x ./nfs.sh; ./nfs.sh"}'
+     register: gce
+
+   - debug: msg=" NFS server IP = {{ gce.instance_data[0].private_ip }}"
+
+   - name: adding instance to the groups
+     lineinfile:
+       dest: /etc/ansible/hosts
+       insertafter: '^\[nfs-server\]'
+       line: "{{ gce.instance_data[0].private_ip }}"
+       state: present
+      
+   - name: Launch Client
+     gce:
+        instance_names: client1
+        zone: "{{ zone }}"
+        machine_type: "{{ machine_type }}"
+        image: "{{ image2 }}"
+        image_family: "{{ image2 }}"
+        service_account_email: "{{ service_account_email }}"
+        credentials_file: "{{ credentials_file }}"
+        project_id: "{{ project_id }}"
+        tags: clients
+        metadata: '{"startup-script" : "curl https://raw.githubusercontent.com/yolmant/Ansible/master/Servers_config/Clients.bash > config.sh; chmod +x ./config.sh; ./config.sh"}'
+     register: gce
+
+   - debug: msg=" Client IP = {{ gce.instance_data[0].private_ip }}"
+
+   - name: adding instance to the groups
+     lineinfile:
+       dest: /etc/ansible/hosts
+       insertafter: '^\[clients\]'
+       line: "{{ gce.instance_data[0].private_ip }}"
+       state: present
+
+   - name: Launch Client
+     gce:
+        instance_names: client2
+        zone: "{{ zone }}"
+        machine_type: "{{ machine_type }}"
+        image: "{{ image2 }}"
+        image_family: "{{ image2 }}"
+        service_account_email: "{{ service_account_email }}"
+        credentials_file: "{{ credentials_file }}"
+        project_id: "{{ project_id }}"
+        tags: client
+        metadata: '{"startup-script" : "curl https://raw.githubusercontent.com/yolmant/Ansible/master/Servers_config/Clients.bash > config.sh; chmod +x ./config.sh; ./config.sh"}'
+     register: gce
+
+   - debug: msg=" Client IP = {{ gce.instance_data[0].private_ip }}"
+
+   - name: adding instance to the groups
+     lineinfile:
+       dest: /etc/ansible/hosts
+       insertafter: '^\[clients\]'
+       line: "{{ gce.instance_data[0].private_ip }}"
+       state: present
+        
