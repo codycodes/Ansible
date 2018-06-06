@@ -1,0 +1,16 @@
+---
+ - hosts: ldap-server
+   remote_user: root
+
+   tasks:
+   - name: changing lines in sshd_config
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#PermitRootLogin no'
+       line: 'PermitRootLogin yes'
+
+   handlers:
+     - name: restart ssh
+       service:
+         name: sshd
+         state: restarted
