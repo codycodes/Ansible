@@ -25,7 +25,7 @@
          credentials_file: "{{ credentials_file }}"
          project_id: "{{ project_id }}"
          tags: ldap-server
-         metadata: '{"startup-script" : "curl https://raw.githubusercontent.com/yolmant/Servers/master/Gcloud/ldap-s.bash > ldap.sh; chmod +x ./ldap.sh; ./ldap.sh"}'
+         metadata: '{"startup-script" : "curl https://raw.githubusercontent.com/yolmant/Ansible/master/Servers_config/Ldaps.bash > ldap.sh; chmod +x ./ldap.sh; ./ldap.sh"}'
      register: gce
 
    - debug: msg=" Ldap server IP = {{ gce.instance_data[0].private_ip }}"
