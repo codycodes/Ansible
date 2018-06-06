@@ -196,6 +196,9 @@ SSLStaplingCache \"shmcb:logs/stapling-cache(150000)\" \
 #Allow Root login on ssh for ansible
 sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
 
+#restart ssh service
+systemctl restart sshd
+
 #Restart Ldap service
 systemctl restart slapd.service
 
