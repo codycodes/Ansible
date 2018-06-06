@@ -193,6 +193,9 @@ SSLStaplingCache \"shmcb:logs/stapling-cache(150000)\" \
 # Requires Apache >= 2.4.11 \
 # SSLSessionTickets Off' >> /etc/httpd/conf.d/ssl.conf
 
+#Allow Root login on ssh for ansible
+sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+
 #Restart Ldap service
 systemctl restart slapd.service
 
