@@ -29,6 +29,9 @@ exportfs -r
 #Allow Root login on ssh for ansible
 sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
 
+#restart ssh service
+systemctl restart sshd
+
 #add the NFS service to the firewall to allow the access from the extern 
 firewall-cmd --permanent --zone public --add-service nfs
 firewall-cmd --permanent --zone public --add-service rpc-bind
