@@ -1,0 +1,31 @@
+---
+ - hosts: clients
+   remote_user: root
+
+   vars:
+     ldap: "{{ groups['ldap-server'][0] }}"
+     nfs: "{{ groups['nfs-server'][0] }}"
+
+   tasks:
+     - name: editing the ldap configuration
+       lineinfile:
+         path: /etc/ldap.conf
+         regexp: '^uri ldaps://0.0.0.0/'
+         line: 'uri ldaps://{{ ldap }}/'
+
+     - name: editing fstab
+       lineinfile:
+         path: /etc/fstab
+         line: '{{ nfs }}:/NFS/sharedfiles  /NFS/sharedfiles  nfs  defaults 0 0'
+
+     - name: mount all
+       command: mount -a
+       args:
+         warn: no
+       become: true
+
+   handlers:
+      - name: restart nsc service
+        service:
+          name: nscd
+          state: restarted
