@@ -12,6 +12,7 @@
 
      - name: Reboot server
        command: /sbin/reboot
+       ignore_errors: true
 
      - name: Wait for the server to finish rebooting
        sudo: no
