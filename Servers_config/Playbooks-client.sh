@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build a YAML configuration file for Ansible arbitrary num of clients
-filepath="~/ansible.yml"
+filepath="/ansible/Ansible/Playbooks/clients-playbook.yml"
 
 echo "---
  - name: Create instance(s)
@@ -10,38 +10,41 @@ echo "---
    gather_facts: no
 
    vars:
-     service_account_email: account@developer.gserviceaccount.com
-     credentials_file: /path/certification.json
+     service_account_email: 325753355097-compute@developer.gserviceaccount.com
+     credentials_file: /ansible/Ansible/Playbooks/.credential.json
      project_id: project-x-154804
      zone: us-west1-a
      machine_type: n1-standard-1
      image1: centos-7
      image2: ubuntu-1604-lts
-     " >> $filepath
+
+   tasks:" >> $filepath
      
 function create_clients {
- echo "- name: Launch Client
-   gce:
-      instance_names: client$1
-      zone: \"{{ zone }}\"
-      machine_type: \"{{ machine_type }}\"
-      image: \"{{ image2 }}\"
-      image_family: \"{{ image2 }}\"
-      service_account_email: \"{{ service_account_email }}\"
-      credentials_file: \"{{ credentials_file }}\"
-      project_id: \"{{ project_id }}\"
-      tags: clients
-      metadata: '{\"startup-script\" : \"curl https://raw.githubusercontent.com/yolmant/Ansible/master/Servers_config/Clients.bash > config.sh; chmod +x ./config.sh; ./config.sh\"}'
-   register: gce
+ echo "
+    - name: Launch Client
+      gce:
+        instance_names: client$1
+        zone: \"{{ zone }}\"
+        machine_type: \"{{ machine_type }}\"
+        image: \"{{ image2 }}\"
+        image_family: \"{{ image2 }}\"
+        service_account_email: \"{{ service_account_email }}\"
+        credentials_file: \"{{ credentials_file }}\"
+        project_id: \"{{ project_id }}\"
+        tags: clients
+        metadata: '{\"startup-script\" : \"curl https://raw.githubusercontent.com/yolmant/Ansible/master/Servers_config/Clients.bash > config.sh; chmod +x ./config.sh; ./config.sh\"}'
+      register: gce
 
- - debug: msg=\" Client IP = {{ gce.instance_data[0].private_ip }}\"
+    - debug: msg=\" Client IP = {{ gce.instance_data[0].private_ip }}\"
 
- - name: adding instance to the groups
-   lineinfile:
-     dest: /etc/ansible/hosts
-     insertafter: '^\[clients\]'
-     line: \"{{ gce.instance_data[0].private_ip }}\"
-     state: present" >> $filepath
+    - name: adding instance to the groups
+      lineinfile:
+        dest: /etc/ansible/hosts
+        insertafter: '^\[clients\]'
+        line: \"{{ gce.instance_data[0].private_ip }}\"
+        state: present
+" >> $filepath
 
 }
 
